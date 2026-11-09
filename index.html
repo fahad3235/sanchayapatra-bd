@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sanchayapatra BD — সঞ্চয়পত্র বিডি</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1 id="title">Sanchayapatra BD</h1>
+    <p class="subtitle" data-i18n="subtitle">Bangladesh National Savings Certificate calculator — profit, tax &amp; early encashment</p>
+  </div>
+  <button id="langBtn" class="lang-btn" type="button">বাংলা</button>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Sections">
+  <button id="tabbtn-calc" class="tab active" role="tab" aria-selected="true" type="button" data-i18n="tabCalc">Calculator</button>
+  <button id="tabbtn-compare" class="tab" role="tab" aria-selected="false" type="button" data-i18n="tabCompare">Compare</button>
+  <button id="tabbtn-encash" class="tab" role="tab" aria-selected="false" type="button" data-i18n="tabEncash">Early Encashment</button>
+  <button id="tabbtn-rates" class="tab" role="tab" aria-selected="false" type="button" data-i18n="tabRates">Rates &amp; Rules</button>
+</nav>
+
+<main>
+  <!-- Calculator -->
+  <section id="tab-calc" class="panel" role="tabpanel">
+    <div class="card">
+      <label for="schemeSel" data-i18n="schemeLabel">Scheme</label>
+      <select id="schemeSel"></select>
+
+      <label for="amountInput" data-i18n="amountLabel">Investment amount (৳)</label>
+      <input id="amountInput" type="number" min="1000" max="5000000" step="1000" inputmode="decimal" value="500000">
+      <p class="hint" data-i18n="amountHint">Minimum ৳1,000. Enter the amount for one certificate purchase.</p>
+
+      <p class="preset-label" data-i18n="presetLabel">Quick amounts</p>
+      <div class="presets">
+        <button type="button" class="preset" data-amount="100000">৳1,00,000</button>
+        <button type="button" class="preset" data-amount="500000">৳5,00,000</button>
+        <button type="button" class="preset" data-amount="750000">৳7,50,000</button>
+        <button type="button" class="preset" data-amount="1000000">৳10,00,000</button>
+        <button type="button" class="preset" data-amount="3000000">৳30,00,000</button>
+      </div>
+
+      <label for="tdsSel" data-i18n="tdsLabel">Tax deducted at source (TDS) on profit</label>
+      <select id="tdsSel">
+        <option value="auto"></option>
+        <option value="low"></option>
+        <option value="high"></option>
+      </select>
+
+      <button id="calcBtn" class="primary" type="button" data-i18n="calcBtn">Calculate</button>
+      <p id="calcError" class="error" hidden></p>
+    </div>
+
+    <div id="calcResult" class="card result" hidden>
+      <h2 id="resTitle">Your return</h2>
+      <dl>
+        <div><dt data-i18n="maturityRate">Maturity profit rate</dt><dd id="resRate"></dd></div>
+        <div><dt data-i18n="tier">Rate tier</dt><dd id="resTier"></dd></div>
+        <div><dt data-i18n="grossProfit">Gross profit</dt><dd id="resGross"></dd></div>
+        <div><dt data-i18n="tds">TDS on profit</dt><dd id="resTds"></dd></div>
+        <div><dt data-i18n="netProfit">Net profit (after TDS)</dt><dd id="resNet"></dd></div>
+        <div><dt data-i18n="periodic">Payout</dt><dd><span id="resPeriodic"></span><br><small id="resPeriodicGross"></small></dd></div>
+        <div class="total"><dt data-i18n="maturityValue">You get back at maturity</dt><dd id="resMaturity"></dd></div>
+      </dl>
+      <p id="capWarn" class="warn" hidden></p>
+      <p id="combinedWarn" class="warn" hidden></p>
+      <p id="tdsNote" class="note"></p>
+    </div>
+  </section>
+
+  <!-- Compare -->
+  <section id="tab-compare" class="panel" role="tabpanel" hidden>
+    <div class="card">
+      <h2 data-i18n="cmpTitle">All schemes for the same amount</h2>
+      <p class="hint" data-i18n="amountHint">Minimum ৳1,000. Enter the amount for one certificate purchase.</p>
+      <p id="cmpError" class="error" hidden></p>
+      <div class="table-wrap">
+        <table id="cmpTable">
+          <thead>
+            <tr>
+              <th scope="col" data-i18n="cmpScheme">Scheme</th>
+              <th scope="col" data-i18n="cmpRate">Rate</th>
+              <th scope="col" data-i18n="cmpGross">Gross profit</th>
+              <th scope="col" data-i18n="cmpTds">TDS</th>
+              <th scope="col" data-i18n="cmpNet">Net profit</th>
+              <th scope="col" data-i18n="cmpBack">You get back</th>
+              <th scope="col" data-i18n="cmpPayout">Payout</th>
+            </tr>
+          </thead>
+          <tbody id="cmpBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Early encashment -->
+  <section id="tab-encash" class="panel" role="tabpanel" hidden>
+    <div class="card">
+      <h2 id="encTitle">What if you encash early?</h2>
+      <p class="note" data-i18n="encNote">Profit is paid only for completed years. Encashing before 1 year returns the principal only — no profit.</p>
+      <p id="encError" class="error" hidden></p>
+      <div class="table-wrap">
+        <table id="encTable">
+          <thead>
+            <tr>
+              <th scope="col" data-i18n="encYear">After</th>
+              <th scope="col" data-i18n="encRate">Profit rate</th>
+              <th scope="col" data-i18n="encGross">Gross profit</th>
+              <th scope="col" data-i18n="encTds">TDS</th>
+              <th scope="col" data-i18n="encNet">Net profit</th>
+              <th scope="col" data-i18n="encTotal">You get back</th>
+            </tr>
+          </thead>
+          <tbody id="encBody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- Rates & rules -->
+  <section id="tab-rates" class="panel" role="tabpanel" hidden>
+    <div class="card">
+      <h2 data-i18n="ratesTitle">Profit rates in use (Jul–Dec 2026)</h2>
+      <p class="note" data-i18n="ratesIntro">Defaults follow the finance ministry notification for July–December 2026 as reported by The Daily Star and Dhaka Tribune. Rates are reviewed every January and July — verify at a bank or the National Savings Directorate before investing, and edit here if they change.</p>
+      <div id="rateRows"></div>
+      <div class="btn-row">
+        <button id="saveRatesBtn" class="primary" type="button" data-i18n="ratesSave">Save rates</button>
+        <button id="resetRatesBtn" type="button" data-i18n="ratesReset">Reset to defaults</button>
+      </div>
+      <p id="ratesMsg" class="ok" hidden></p>
+      <p id="ratesErr" class="error" hidden></p>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="rulesTitle">Limits &amp; who can buy</h2>
+      <div id="rulesRows"></div>
+      <p id="combinedCapNote" class="note"></p>
+    </div>
+
+    <div class="card">
+      <h2 data-i18n="sourcesTitle">Sources &amp; disclaimer</h2>
+      <p class="note" data-i18n="sourcesText">Rates: finance ministry notification for Jul–Dec 2026, as reported by The Daily Star (“Govt keeps national savings rates unchanged for Jul–Dec”) and Dhaka Tribune’s savings-certificate guide. TDS 5%/10% rule and ৳50 lakh combined cap are the widely reported National Savings Directorate rules. This is an estimator, not investment advice — confirm current rates, limits and eligibility at the issuing bank or post office before buying.</p>
+      <div class="btn-row">
+        <button id="exportBtn" type="button" data-i18n="exportBtn">Export data</button>
+        <label class="import-label" for="importFile" data-i18n="importBtn">Import data</label>
+        <input id="importFile" type="file" accept=".json,application/json" hidden>
+        <button id="eraseBtn" class="danger" type="button" data-i18n="eraseBtn">Erase my rates</button>
+      </div>
+      <p id="importMsg" class="ok" hidden></p>
+      <p id="eraseMsg" class="ok" hidden></p>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p data-i18n="footer">Offline • No account • Your data never leaves this browser</p>
+</footer>
+
+<script src="js/data.js"></script>
+<script src="js/logic.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
